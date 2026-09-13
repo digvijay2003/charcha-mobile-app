@@ -113,12 +113,27 @@ If the phone still cannot connect, go back to `npm run tunnel` — it always wor
 | A red screen on the phone | A JavaScript error. It names the file and line; fix it and save. |
 | Text in the system font instead of Geist | Press `r` to reload once fonts have downloaded. |
 
+## Branches
+
+```
+staging  ──── pull request ────►  main
+you commit here                   merges only when checks pass
+```
+
+Commit and push to `staging`. When it is ready, open a pull request into `main`;
+GitHub will not let it merge until both checks pass, and only `staging` may open
+one. Build APKs to share from `main`. Details:
+[docs/pipeline.md](docs/pipeline.md).
+
 ## Checking a change
 
+These are the same checks GitHub runs, so run them before pushing:
+
 ```bash
+npx expo install --check             # library versions match Expo SDK 57
 npm run lint
-npm run typecheck                    # run `npm start` once first, to generate route types
-npx expo export --platform web       # proves the whole app bundles
+npm run typecheck                    # stricter about routes after `npm start` has run once
+npx expo export --platform android   # proves the whole app bundles for a phone
 ```
 
 Before calling a visual change done, look at it in **both themes** (You tab →

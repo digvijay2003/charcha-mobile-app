@@ -140,10 +140,14 @@ room-specific, and anything that needs to know which room it is in to decide
 ## Verification
 
 ```bash
+npx expo install --check             # native libraries match SDK 57
 npm run lint
-npm run typecheck      # after `npx expo start` has run once, for typed routes
-npx expo export --platform web   # proves every import resolves and bundles
+npm run typecheck                    # stricter once `npx expo start` has generated typed routes
+npx expo export --platform android   # proves every import resolves and bundles for a phone
 ```
+
+CI runs exactly these on pushes to `staging` and pull requests into `main`
+([pipeline.md](pipeline.md)).
 
 Visual checks: both themes, all three rooms, at phone width (~390pt), on a real
 device through Expo Go when touching gestures, sheets or the tab bar.

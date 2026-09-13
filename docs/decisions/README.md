@@ -18,3 +18,4 @@ superseded.
 | [0005](0005-device-local-preferences.md) | Device-local preferences; anonymous activity never stored | Accepted |
 | [0006](0006-where-mobile-goes-beyond-the-web.md) | Where mobile goes beyond the web | Accepted |
 | [0007](0007-on-mode-text-token.md) | An `onMode` text token for filled buttons | Accepted |
+| [0008](0008-staging-to-main-through-a-checked-pull-request.md) | Staging to main through a checked pull request | Accepted |

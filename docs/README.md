@@ -7,6 +7,7 @@ code is a bug in the document.
 | --- | --- |
 | [architecture.md](architecture.md) | Stack, routes, state, conventions, SDK 57 gotchas |
 | [design-system.md](design-system.md) | Tokens, per-room theming, type, touch targets, accessibility |
+| [pipeline.md](pipeline.md) | Branches, the checks on `main`, releasing, pushing from this machine |
 | [decisions/](decisions/) | Why things are the way they are, one file per decision |
 
 Product rules — the three rooms, language rules, what is not built — are owned

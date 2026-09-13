@@ -23,3 +23,7 @@ Three rules when making changes here:
 Before calling a visual change done, check it in both themes and in all three
 rooms — the palette changes per room, so a colour that works in Charcha can fail
 in Gupt-Charcha.
+
+**Branches:** commit to `staging`. `main` only accepts pull requests from
+`staging` with passing checks — never try to push to it. Renaming a CI job means
+updating branch protection in the same change; see `docs/pipeline.md`.
