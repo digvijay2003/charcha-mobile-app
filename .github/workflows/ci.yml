@@ -1,0 +1,77 @@
+# The gate for main. The job *names* below are the required status checks in
+# main's branch protection — rename one and update protection too
+# (docs/pipeline.md#changing-the-checks).
+name: CI
+
+on:
+  push:
+    branches: [staging]
+  pull_request:
+    branches: [main]
+
+# Cancels an older run of the same event on the same branch. Never cancels the
+# other event's run, which branch protection may be waiting on.
+concurrency:
+  group: ci-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  source-branch:
+    name: Source branch
+    runs-on: ubuntu-latest
+    steps:
+      # GitHub cannot restrict where a pull request comes from, so this does.
+      # Values arrive through env, never interpolated into the script: branch
+      # names are attacker-controlled text on a public repo.
+      - name: Pull requests into main must come from this repo's staging
+        env:
+          EVENT: ${{ github.event_name }}
+          BASE: ${{ github.base_ref }}
+          HEAD: ${{ github.head_ref }}
+          HEAD_REPO: ${{ github.event.pull_request.head.repo.full_name }}
+          REPO: ${{ github.repository }}
+        run: |
+          if [ "$EVENT" = "pull_request" ] && [ "$BASE" = "main" ]; then
+            if [ "$HEAD" != "staging" ] || [ "$HEAD_REPO" != "$REPO" ]; then
+              echo "::error::Pull requests into main must come from $REPO:staging, not $HEAD_REPO:$HEAD. Merge your work into staging first."
+              exit 1
+            fi
+          fi
+          echo "Source branch is allowed."
+
+  quality:
+    name: Quality
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out the commit under test
+        uses: actions/checkout@v4
+
+      # React Native 0.86 requires Node ^22.13. Pinned to 22 to match local dev.
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+
+      # `ci` (not `install`) installs exactly the lockfile and fails if they drift.
+      - name: Install dependencies
+        run: npm ci
+
+      # A native library on a version Expo Go does not ship fails on the phone,
+      # not in lint or tsc.
+      - name: Dependencies match Expo SDK 57
+        run: npx expo install --check
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      # What the phone actually loads. Catches imports that only resolve on web.
+      - name: Bundle for Android
+        run: npx expo export --platform android --output-dir dist
